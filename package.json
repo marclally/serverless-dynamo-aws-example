@@ -1,0 +1,20 @@
+{
+  "name": "serverless-dynamo-aws-example",
+  "version": "1.0.0",
+  "description": "Sample Serverless API using AWS DynamoDB with CloudFormation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Marc Lally",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/marclally/serverless-dynamo-aws-example.git"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "moment": "^2.24.0",
+    "uuid": "^3.4.0"
+  }
+}

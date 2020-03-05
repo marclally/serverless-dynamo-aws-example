@@ -1,0 +1,86 @@
+service: serverless-dynamo-aws-example
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: eu-west-2
+  environment:
+    BOOKS_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+
+iamRoleStatements:
+  - Effect: "Allow"
+    Action:
+      - dynamodb:DescribeTable
+      - dynamodb:Query
+      - dynamodb:Scan
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+    Resource: "*"
+
+functions:
+  addBook:
+    handler: api/addBook.add
+    memorySize: 512
+    description: Add a new book.
+    events:
+      - http:
+          path: book/add
+          method: post
+
+  getBooks:
+    handler: api/getBooks.list
+    memorySize: 512
+    description: Get all books.
+    events:
+      - http:
+          path: books
+          method: get
+
+  getBook:
+    handler: api/getBook.book
+    memorySize: 512
+    description: Get a single book.
+    events:
+      - http:
+          path: /book/{bookUuid}
+          method: get
+
+  deleteBook:
+    handler: api/deleteBook.delete
+    memorySize: 512
+    description: Delete a book.
+    events:
+      - http:
+          path: /book/{bookUuid}/delete
+          method: post
+
+  updateBook:
+    handler: api/updateBook.update
+    memorySize: 512
+    description: Update a book.
+    events:
+      - http:
+          path: /book/{bookUuid}/update
+          method: post
+
+resources:
+  Resources:
+    BooksDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: "id"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_AND_OLD_IMAGES"
+        TableName: ${self:provider.environment.BOOKS_TABLE}
